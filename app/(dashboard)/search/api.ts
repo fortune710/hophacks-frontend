@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 export const getResearchPaperSentiment = async (abstract: string, searchTerm: string) => {
     if (!abstract) return
     const response = await fetch(`http://localhost:5000/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
@@ -51,3 +53,33 @@ export const getSinglePaper = async (query: string, title: string) => {
     const papers = await fetchRecentPapers(query);
     return papers.find((paper) => paper.title === title);
 }
+
+interface RecommendationParams {
+    limit: number;
+    identifier: string;
+    abstract: string;
+    title: string;
+}
+
+interface RecommendationResponse {
+    title: string,
+    urls: string[],
+    yearPublished: string
+}
+  
+
+export const getRecommendations = cache(async (params: RecommendationParams): Promise<RecommendationResponse[]> => {
+    const response = await fetch('http://localhost:5000/recommend', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(params),
+    });
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    return await response.json();
+  });

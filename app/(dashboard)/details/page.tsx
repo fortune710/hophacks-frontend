@@ -1,13 +1,16 @@
 import { Badge } from "@/components/ui/badge";
-import { getSinglePaper } from "../search/api";
+import {  getSinglePaper } from "../search/api";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import ArxivKnowledgeGraph from "@/components/graph";
+import Recommendations from "./recommendations";
 
 export default async function PaperDetailsPage({ searchParams }: { searchParams: {[x: string] : string} }) {
     const query = searchParams.query;
     const title = searchParams.title;
 
     const paper = await getSinglePaper(query, title);
+    //const graphData = await getGraphData(paper?.arxiv_id!);
 
     return (
         <main>
@@ -41,7 +44,15 @@ export default async function PaperDetailsPage({ searchParams }: { searchParams:
                     Click here to read more
                 </Link>
 
+                <div className="mt-4">
+                    <h2 className="text-xl font-medium">Recommendations</h2>
+                    <Recommendations paper={paper}/>
+                </div>
             </section>
+
+            {
+                //<ArxivKnowledgeGraph data={graphData}/>
+            }
 
         </main>
     )
