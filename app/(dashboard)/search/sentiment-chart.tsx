@@ -41,7 +41,6 @@ export function SentimentChart({ score, totalPosts }: { score: number, totalPost
       negative: percentage < 50 ? percentage : 100 - percentage 
     }
   ]
-  const totalVisitors = chartData[0].positive + chartData[0].negative
 
   return (
     <Card className="flex flex-col">
@@ -94,12 +93,12 @@ export function SentimentChart({ score, totalPosts }: { score: number, totalPost
               dataKey="positive"
               stackId="a"
               cornerRadius={5}
-              fill="var(--color-positive)"
+              fill="#1b9648"
               className="stroke-transparent stroke-2"
             />
             <RadialBar
               dataKey="negative"
-              fill="var(--color-negative)"
+              fill="#c40417"
               stackId="a"
               cornerRadius={5}
               className="stroke-transparent stroke-2"

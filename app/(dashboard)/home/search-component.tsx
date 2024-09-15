@@ -21,7 +21,6 @@ export function SearchComponent() {
     };
     const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("submitted");
         return router.push(`/search?query=${searchQuery}`)
     };
 
