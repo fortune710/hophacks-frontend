@@ -11,6 +11,7 @@ export default function Home() {
       />
 
       <main>
+        <a href="/api/auth/login">Login</a>
         
       </main>
     
