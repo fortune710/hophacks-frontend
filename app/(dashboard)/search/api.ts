@@ -2,7 +2,7 @@ import { cache } from "react";
 
 export const getResearchPaperSentiment = async (abstract: string, searchTerm: string) => {
     if (!abstract) return
-    const response = await fetch(`http://localhost:5000/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
+    const response = await fetch(`http://127.0.0.1:5000/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
         next: {
             tags: ["abstract-sentiment", abstract]
         }
@@ -14,7 +14,7 @@ export const getResearchPaperSentiment = async (abstract: string, searchTerm: st
 }
 
 export const fetchRecentPapers = async (query: string) => {
-    const response = await fetch("http://localhost:5000/recent_papers?search_term="+query, {
+    const response = await fetch("http://127.0.0.1:5000/recent_papers?search_term="+query, {
         method: "GET",
         next: {
             tags: ["search-term", query]
@@ -33,7 +33,7 @@ export const fetchRecentPapers = async (query: string) => {
 }
 
 export const analyzeRedditPosts = async (query: string) => {
-    const res = await fetch("http://localhost:5000/analyze_reddit_sentiment?search_term=" + query, {
+    const res = await fetch("http://127.0.0.1:5000/analyze_reddit_sentiment?search_term=" + query, {
         next: {
             tags: ["reddit-sentiment", query]
         }
@@ -69,7 +69,7 @@ interface RecommendationResponse {
   
 
 export const getRecommendations = cache(async (params: RecommendationParams): Promise<RecommendationResponse[]> => {
-    const response = await fetch('http://localhost:5000/recommend', {
+    const response = await fetch('http://127.0.0.1:5000/recommend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

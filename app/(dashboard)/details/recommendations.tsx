@@ -17,7 +17,9 @@ export default async function Recommendations({ paper }: { paper: any }) {
                         <CardContent>
                             <CardHeader>
                                 <CardTitle>
-                                    {recommendation.title}
+                                    <a href={recommendation.urls[0]} target="_blank" rel="noopener noreferrer">
+                                        {recommendation.title}
+                                    </a>
                                 </CardTitle>
                                 <CardDescription>
                                     Published in {recommendation.yearPublished}
