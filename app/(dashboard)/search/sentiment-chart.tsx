@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
 
 import {
@@ -46,6 +46,9 @@ export function SentimentChart({
 }) {
   const [thumbsUp, setThumbsUp] = useState(0);
   const [thumbsDown, setThumbsDown] = useState(0);
+  const [hotOrNotResult, setHotOrNotResult] = useState<string | null>(null);
+  const [hotOrNotReasoning, setHotOrNotReasoning] = useState<string | null>(null);
+  const [hotOrNotRecommendation, setHotOrNotRecommendation] = useState<string | null>(null);
 
   const redditPercentage = sentimentToScore(score);
   const abstractPercentage = sentimentToScore(abstractScore);
@@ -80,6 +83,29 @@ export function SentimentChart({
 
   const thumbsUpPercentage = Math.min((thumbsUp / 100) * 100, 100);
   const thumbsDownPercentage = Math.min((thumbsDown / 100) * 100, 100);
+  useEffect(() => {
+    const fetchHotOrNot = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/hot-or-not?search_term=${encodeURIComponent(topic)}`, {
+          method: 'GET',
+        });
+
+        const data = await response.json();
+        
+        // Encode the raw result without parsing
+        setHotOrNotReasoning(data.result || "No reasoning provided");
+        setHotOrNotRecommendation(data.recommendation || "N/A");
+      } catch (error) {
+        console.error('Error fetching hot-or-not result:', error);
+        setHotOrNotReasoning("Error fetching result");
+        setHotOrNotRecommendation("N/A");
+      }
+    };
+
+    if (topic) {
+      fetchHotOrNot();
+    }
+  }, [topic]);
 
   const RadialBarChartComponent = ({ data, innerLabel, item_type }: { data: any[], innerLabel: string, item_type: string }) => (
     <ChartContainer
@@ -177,6 +203,18 @@ export function SentimentChart({
           <div className="font-bold text-lg tracking-wide leading-relaxed">
             {thumbsUp === 100 ? "Hot!" : "Not!"}
           </div>
+        )}
+        
+        {hotOrNotReasoning ? (
+          <div className="text-center mt-4">
+            <h3 className="font-semibold mb-2">AI Opinion:</h3>
+            <p className="text-sm mb-2">{hotOrNotReasoning}</p>
+            {hotOrNotRecommendation !== "N/A" && (
+              <p className="text-sm"><strong>Recommendation:</strong> {hotOrNotRecommendation}</p>
+            )}
+          </div>
+        ) : (
+          <p className="mt-4 text-lg text-gray-500">Loading hot-or-not result...</p>
         )}
       </CardContent>
 

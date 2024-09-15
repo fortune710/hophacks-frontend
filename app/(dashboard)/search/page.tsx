@@ -59,7 +59,7 @@ export default async function SearchPage({ searchParams }: { searchParams: {[x: 
                     <TabsContent value="analysis">
                         <SentimentChart 
                             score={sentiment.average_sentiment}
-                            totalPosts={10}
+                            totalPosts={sentiment.num_posts_analyzed}
                             abstractScore={averageAbstractSentiment}
                             totalAbstracts={abstractCount}
                             topic={query}
