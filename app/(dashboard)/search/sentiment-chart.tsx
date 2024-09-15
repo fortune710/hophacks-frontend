@@ -84,27 +84,44 @@ export function SentimentChart({
   const thumbsUpPercentage = Math.min((thumbsUp / 100) * 100, 100);
   const thumbsDownPercentage = Math.min((thumbsDown / 100) * 100, 100);
   useEffect(() => {
+    let isMounted = true;
+
     const fetchHotOrNot = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:5000/hot-or-not?search_term=${encodeURIComponent(topic)}`, {
+        const response = await fetch("http://127.0.0.1:5000/hot-or-not?search_term=" + topic, {
           method: 'GET',
+          next: {
+            tags: ["search-term", topic]
+        }
         });
 
         const data = await response.json();
         
-        // Encode the raw result without parsing
-        setHotOrNotReasoning(data.result || "No reasoning provided");
-        setHotOrNotRecommendation(data.recommendation || "N/A");
+        if (isMounted) {
+          // Set the raw result without parsing
+          // Replace 'frozen' with '🥶' and 'fire' with '🔥' in the result
+          const processedResult = data.result
+            .replace(/['"]frozen['"]/g, "'🥶'")
+            .replace(/['"]fire['"]/g, "'🔥'");
+          setHotOrNotResult(processedResult);
+          console.log(data.result)
+          setHotOrNotReasoning(processedResult);
+        }
       } catch (error) {
-        console.error('Error fetching hot-or-not result:', error);
-        setHotOrNotReasoning("Error fetching result");
-        setHotOrNotRecommendation("N/A");
+        if (isMounted) {
+          console.error('Error fetching hot-or-not result:', error);
+          setHotOrNotReasoning("Error fetching result");
+        }
       }
     };
 
     if (topic) {
       fetchHotOrNot();
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [topic]);
 
   const RadialBarChartComponent = ({ data, innerLabel, item_type }: { data: any[], innerLabel: string, item_type: string }) => (
@@ -209,9 +226,6 @@ export function SentimentChart({
           <div className="text-center mt-4">
             <h3 className="font-semibold mb-2">AI Opinion:</h3>
             <p className="text-sm mb-2">{hotOrNotReasoning}</p>
-            {hotOrNotRecommendation !== "N/A" && (
-              <p className="text-sm"><strong>Recommendation:</strong> {hotOrNotRecommendation}</p>
-            )}
           </div>
         ) : (
           <p className="mt-4 text-lg text-gray-500">Loading hot-or-not result...</p>
