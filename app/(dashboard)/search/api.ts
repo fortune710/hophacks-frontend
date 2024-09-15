@@ -1,8 +1,10 @@
 import { cache } from "react";
 
+const BASE_URL = "https://hophacks-marshallwallace-apis.vercel.app"
+
 export const getResearchPaperSentiment = async (abstract: string, searchTerm: string) => {
     if (!abstract) return
-    const response = await fetch(`http://127.0.0.1:5000/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
+    const response = await fetch(`${BASE_URL}/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
         next: {
             tags: ["abstract-sentiment", abstract]
         }
@@ -14,7 +16,7 @@ export const getResearchPaperSentiment = async (abstract: string, searchTerm: st
 }
 
 export const fetchRecentPapers = async (query: string) => {
-    const response = await fetch("http://127.0.0.1:5000/recent_papers?search_term="+query, {
+    const response = await fetch(BASE_URL + "/recent_papers?search_term="+query, {
         method: "GET",
         next: {
             tags: ["search-term", query]
@@ -33,7 +35,7 @@ export const fetchRecentPapers = async (query: string) => {
 }
 
 export const analyzeRedditPosts = async (query: string) => {
-    const res = await fetch("http://127.0.0.1:5000/analyze_reddit_sentiment?search_term=" + query, {
+    const res = await fetch(BASE_URL + "/analyze_reddit_sentiment?search_term=" + query, {
         next: {
             tags: ["reddit-sentiment", query]
         }
@@ -54,6 +56,17 @@ export const getSinglePaper = async (query: string, title: string) => {
     return papers.find((paper) => paper.title === title);
 }
 
+export const getGraphData = async (arxiv_id: string) => {
+    const id = arxiv_id.split('/')[arxiv_id.split('/').length - 1]?.replace("v1","");
+    const res = await fetch(BASE_URL + "/citation_graph?arxiv_id=" + id, {
+        next: {
+            tags: ["graph", id]
+        }
+    });
+    return await res.json();
+
+}
+
 interface RecommendationParams {
     limit: number;
     identifier: string;
@@ -69,7 +82,7 @@ interface RecommendationResponse {
   
 
 export const getRecommendations = cache(async (params: RecommendationParams): Promise<RecommendationResponse[]> => {
-    const response = await fetch('http://127.0.0.1:5000/recommend', {
+    const response = await fetch(BASE_URL + '/recommend', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
