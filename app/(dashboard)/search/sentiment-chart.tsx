@@ -104,7 +104,6 @@ export function SentimentChart({
             .replace(/['"]frozen['"]/g, "'🥶'")
             .replace(/['"]fire['"]/g, "'🔥'");
           setHotOrNotResult(processedResult);
-          console.log(data.result)
           setHotOrNotReasoning(processedResult);
         }
       } catch (error) {

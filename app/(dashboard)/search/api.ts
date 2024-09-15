@@ -6,7 +6,7 @@ export const getResearchPaperSentiment = async (abstract: string, searchTerm: st
     if (!abstract) return
     const response = await fetch(`${BASE_URL}/analyze_sentiment?search_term=${searchTerm}&text=${abstract}`, {
         next: {
-            tags: ["abstract-sentiment", abstract]
+            tags: ["abstract-sentiment", abstract.slice(0, 20)]
         }
     });
     const data = await response.json() as {
