@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
 
 import {
@@ -43,6 +44,9 @@ export function SentimentChart({
   totalAbstracts: number, 
   topic: string 
 }) {
+  const [thumbsUp, setThumbsUp] = useState(0);
+  const [thumbsDown, setThumbsDown] = useState(0);
+
   const redditPercentage = sentimentToScore(score);
   const abstractPercentage = sentimentToScore(abstractScore);
 
@@ -61,6 +65,21 @@ export function SentimentChart({
       negative: abstractPercentage < 50 ? abstractPercentage : 100 - abstractPercentage
     }
   ]
+
+  const handleThumbsUp = () => {
+    if (thumbsUp < 100 && thumbsDown < 100) {
+      setThumbsUp(thumbsUp + 1);
+    }
+  };
+
+  const handleThumbsDown = () => {
+    if (thumbsUp < 100 && thumbsDown < 100) {
+      setThumbsDown(thumbsDown + 1);
+    }
+  };
+
+  const thumbsUpPercentage = Math.min((thumbsUp / 100) * 100, 100);
+  const thumbsDownPercentage = Math.min((thumbsDown / 100) * 100, 100);
 
   const RadialBarChartComponent = ({ data, innerLabel, item_type }: { data: any[], innerLabel: string, item_type: string }) => (
     <ChartContainer
@@ -124,6 +143,44 @@ export function SentimentChart({
   return (
     <Card className="flex flex-col space-y-6">
       <CardHeader className="items-center pb-0">
+        <CardTitle className="tracking-wide leading-relaxed">Hot or Not: {topic}</CardTitle>
+        <CardDescription className="tracking-wide leading-relaxed mt-2">
+          What do you think about this topic?
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col items-center space-y-6">
+        <div className="flex items-center gap-4 font-medium leading-relaxed">
+          <button 
+            onClick={handleThumbsUp} 
+            disabled={thumbsUp === 100 || thumbsDown === 100} 
+            className="px-4 py-2 bg-green-500 text-white rounded tracking-wide"
+          >
+            👍 {thumbsUp}
+          </button>
+          <button 
+            onClick={handleThumbsDown} 
+            disabled={thumbsUp === 100 || thumbsDown === 100} 
+            className="px-4 py-2 bg-red-500 text-white rounded tracking-wide"
+          >
+            👎 {thumbsDown}
+          </button>
+        </div>
+        <div className="w-full space-y-4">
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${thumbsUpPercentage}%` }}></div>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="bg-red-500 h-2.5 rounded-full" style={{ width: `${thumbsDownPercentage}%` }}></div>
+          </div>
+        </div>
+        {(thumbsUp === 100 || thumbsDown === 100) && (
+          <div className="font-bold text-lg tracking-wide leading-relaxed">
+            {thumbsUp === 100 ? "Hot!" : "Not!"}
+          </div>
+        )}
+      </CardContent>
+
+      <CardHeader className="items-center pb-0 pt-6 border-t">
         <CardTitle className="tracking-wide leading-relaxed">Sentiment Analysis: {topic}</CardTitle>
         <CardDescription className="tracking-wide leading-relaxed">Reddit Posts vs Research Papers</CardDescription>
       </CardHeader>
