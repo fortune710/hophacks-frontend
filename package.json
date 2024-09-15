@@ -2,6 +2,7 @@
   "name": "hophacks-project",
   "version": "0.1.0",
   "private": true,
+  "module": "build/index.module.js",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -28,6 +29,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-knowledge-graph": "^0.3.17",
+    "reagraph": "4.17.3",
     "recharts": "^2.12.7",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
