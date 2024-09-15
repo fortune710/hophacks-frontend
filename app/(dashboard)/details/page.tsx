@@ -22,7 +22,7 @@ export default async function PaperDetailsPage({ searchParams }: { searchParams:
                     <p className="text-sm">Published in {paper?.year}</p>
                 </div>
 
-                <div className="mt-1">
+                <div className="mt-1 space-x-2">
                     {
                         paper?.categories.map((category) => (
                             <Badge key={category} variant="outline">
