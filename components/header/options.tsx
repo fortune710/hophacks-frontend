@@ -27,7 +27,7 @@ export default function Options() {
             pathname === "/predictions" ? "text-foreground" : "text-muted-foreground"
           )}
         >
-          Predictions
+          
         </Link>
         <Link
           href="/maps"
@@ -38,7 +38,7 @@ export default function Options() {
               : "text-muted-foreground"
           )}
         >
-          Maps
+          
         </Link>
         </>
     )
