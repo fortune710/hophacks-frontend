@@ -10,3 +10,44 @@ export const getResearchPaperSentiment = async (abstract: string, searchTerm: st
     }
     return data
 }
+
+export const fetchRecentPapers = async (query: string) => {
+    const response = await fetch("http://localhost:5000/recent_papers?search_term="+query, {
+        method: "GET",
+        next: {
+            tags: ["search-term", query]
+        }
+    });
+    const papers = await response.json() as {
+        year: number,
+        title: string,
+        authors: string[],
+        categories: string[],
+        arxiv_id: string,
+        abstract: string
+    }[];
+    return papers
+
+}
+
+export const analyzeRedditPosts = async (query: string) => {
+    const res = await fetch("http://localhost:5000/analyze_reddit_sentiment?search_term=" + query, {
+        next: {
+            tags: ["reddit-sentiment", query]
+        }
+    });
+
+
+    
+    const sentiment = await res.json() as  {
+        average_sentiment: number,
+        num_posts_analyzed: number
+    }
+
+    return sentiment;
+}
+
+export const getSinglePaper = async (query: string, title: string) => {
+    const papers = await fetchRecentPapers(query);
+    return papers.find((paper) => paper.title === title);
+}

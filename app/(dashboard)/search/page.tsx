@@ -3,41 +3,17 @@ import { Searchbar } from "@/components/ui/searchbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SentimentChart } from "./sentiment-chart";
 import { Badge } from "@/components/ui/badge";
-import { getResearchPaperSentiment } from "./api";
+import { analyzeRedditPosts, fetchRecentPapers, getResearchPaperSentiment } from "./api";
 import { sentimentToScore } from "@/utils/functions";
 import { Progress } from "@/components/ui/progress";
 import { SearchbarContainer } from "./searchbar-container";
+import Link from "next/link";
 
 export default async function SearchPage({ searchParams }: { searchParams: {[x: string] : string} }) {
     const query = searchParams.query;
 
-    const response = await fetch("http://localhost:5000/recent_papers?search_term="+query, {
-        method: "GET",
-        next: {
-            tags: ["search-term", query]
-        }
-    });
-    const papers = await response.json() as {
-        year: number,
-        title: string,
-        authors: string,
-        categories: string[],
-        arxiv_id: string,
-        abstract: string
-    }[];
-
-    const res = await fetch("http://localhost:5000/analyze_reddit_sentiment?search_term=" + query, {
-        next: {
-            tags: ["reddit-sentiment", query]
-        }
-    });
-
-
-    
-    const sentiment = await res.json() as  {
-        average_sentiment: number,
-        num_posts_analyzed: number
-    }
+    const papers = await fetchRecentPapers(query);
+    const sentiment = await analyzeRedditPosts(query);
 
     return (
         <main>
@@ -55,7 +31,7 @@ export default async function SearchPage({ searchParams }: { searchParams: {[x: 
                             </TabsTrigger>
                         </TabsList>
                     </div>
-                    <TabsContent className="space-y-4 md:space-y-7 pt-3" value="papers">
+                    <TabsContent className="pt-3" value="papers">
                         {
                             papers.map((paper) => (
                                 <SearchResult 
@@ -86,7 +62,7 @@ async function SearchResult({ paper, keyword }: { paper: any, keyword: string })
     const score = !data ? 0 : sentimentToScore(data.sentiment);
 
     return (
-        <div>
+        <Link className="cursor-pointer mt-4 md:mt-7" href={`/details?title=${paper?.title}&query=${keyword}`}>
             <p className="text-sm">Published in {paper.year}</p>
             <h2 className="text-2xl font-bold">{paper.title}</h2>
             <p>
@@ -97,6 +73,6 @@ async function SearchResult({ paper, keyword }: { paper: any, keyword: string })
                 <p className="text-xs mb-0.5">Abstract Sentiment: {score >= 50 ? "Positive" : "Negative"}</p>
                 <Progress className="text-red-500" key={score} value={score}/>
             </div>
-        </div>
+        </Link>
     )
 }
