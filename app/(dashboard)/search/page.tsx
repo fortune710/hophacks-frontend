@@ -15,6 +15,20 @@ export default async function SearchPage({ searchParams }: { searchParams: {[x: 
     const papers = await fetchRecentPapers(query);
     const sentiment = await analyzeRedditPosts(query);
 
+    // Calculate average abstract sentiment
+    let totalAbstractSentiment = 0;
+    let abstractCount = 0;
+
+    for (const paper of papers) {
+        const data = await getResearchPaperSentiment(paper.abstract, query);
+        if (data) {
+            totalAbstractSentiment += data.sentiment;
+            abstractCount++;
+        }
+    }
+
+    const averageAbstractSentiment = abstractCount > 0 ? totalAbstractSentiment / abstractCount : 0;
+
     return (
         <main>
             <SearchbarContainer defaultValue={query}/>
@@ -41,17 +55,17 @@ export default async function SearchPage({ searchParams }: { searchParams: {[x: 
                                 />
                             ))
                         }
-
                     </TabsContent>
                     <TabsContent value="analysis">
                         <SentimentChart 
-                            totalPosts={sentiment.num_posts_analyzed} 
-                            score={sentiment.average_sentiment} 
+                            score={sentiment.average_sentiment}
+                            totalPosts={10}
+                            abstractScore={averageAbstractSentiment}
+                            totalAbstracts={abstractCount}
+                            topic={query}
                         />
                     </TabsContent>
-
                 </Tabs>
-
             </section>
         </main>
     )

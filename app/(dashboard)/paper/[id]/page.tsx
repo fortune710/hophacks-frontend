@@ -38,8 +38,9 @@ export default async function PaperPage({ params }: { params: { id: string } }) 
         <ContentBox title="Additional Content 1" />
         <ContentBox title="Additional Content 2" />
       </div>
-      <div>
-        <h2 className="text-2xl font-semibold mb-4">Recommendations</h2>
+      
+      <div className="mt-12">
+        <h1 className="text-2xl font-semibold mb-4">Recommendations</h1>
         <pre className="bg-gray-100 p-4 rounded overflow-auto">
           {JSON.stringify(recommendations, null, 2)}
         </pre>
